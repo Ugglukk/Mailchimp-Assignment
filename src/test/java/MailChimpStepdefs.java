@@ -1,7 +1,7 @@
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import org.junit.jupiter.api.Assertions;
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -11,7 +11,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 public class MailChimpStepdefs {
     WebDriver driver;
     String remail = ("olakola." + randomLetters(2) + randomNumbers(2) + "@mail.com"); //creates random email starting with olakola. and ends with @mail.com
-    String rpassword = (randomLetters(3) +"zK"+ randomNumbers(2) + randomSigns(1));//creates random password
+    String rpassword = (randomLetters(3) + "zK" + randomNumbers(2) + randomSigns(1));//creates random password
 
     @Given("I have opened browser")
     public void iHaveOpenedBrowser() throws InterruptedException {
@@ -25,15 +25,16 @@ public class MailChimpStepdefs {
 
     @Given("I enter email address")
     public void iEnterEmailAddress() {
-
         WebElement email = driver.findElement(By.id("email"));  //locate email field
-        email.sendKeys(remail); //enters random email into field
+        email.sendKeys(remail);     //enters random email into field
     }
 
     @Given("I enter username")  //uses email address as username as it is allowed for login purposes
     public void iEnterUserName() {
-        WebElement username = driver.findElement(By.id("new_username"));    //locate username field
-        username.sendKeys(remail);   //enters random email as username into field as it is allowed as username
+        WebElement username = driver.findElement(By.xpath("//*[@id=\"new_username\"]"));
+        username.sendKeys(remail);    //enters random email as username into field as it is allowed as username
+        username.clear();
+        username.sendKeys(remail);    //enters random email as username into field as it is allowed as username
     }
 
     @Given("I enter password")
@@ -49,28 +50,36 @@ public class MailChimpStepdefs {
         Thread.sleep(750);// short wait to load next page
     }
 
-    @Then("I get verification if account created or not")
-    public void iGetVerificationIfAccountCreatedOrNot() {
+    @Then("I get verification that account is created")
+    public void iGetVerificationThatAccountIsCreated() {
         String url = driver.getCurrentUrl();    // locate and get the url of current page.
-        if (url.contains("success/"))//Successfully registered enters a success page and if not its labeled post.
-        {
-            System.out.println("\nAccount creation successful");
-        } else {
-            System.out.println("\nAccount creation failed");
-            WebElement invalid = driver.findElement(By.className("invalid-error"));
-            invalid.getText();
-            System.out.println(invalid.getText());
-        }
+        Assert.assertTrue(url.contains("success/"));
+        System.out.println("\nAccount creation successful");
+
+        driver.quit();
+    }
+
+    @Then("I get verification that account is not created")
+    public void iGetVerificationThatAccountIsNotCreated() {
+        String url = driver.getCurrentUrl();    // locate and get the url of current page.
+        Assert.assertTrue(url.contains("post"));
+        System.out.println("\nAccount creation failed");
+        WebElement invalid = driver.findElement(By.className("invalid-error"));
+        invalid.getText();
+        System.out.println(invalid.getText());
+
         driver.quit();
     }
 
     @Given("I enter long username")
     public void iEnterLongUserName() { // input long semi randomized username
-        String longname = "olakola" + randomLetters(100);// start name with olakola and continue with random letters
+        String longname = "olakola" + randomLetters(100) + "@mail.com";// start name with olakola and continue with random letters
         WebElement username = driver.findElement(By.id("new_username"));    //locate username field
+        username.sendKeys(longname);
+        username.clear();
         username.sendKeys(longname);   //enters username into field
 
-        Assertions.assertTrue(longname.length() >= 100);
+
         System.out.println("\nUsername is to long");
     }
 
@@ -78,12 +87,17 @@ public class MailChimpStepdefs {
     public void iEnterAlreadyUsedUsername() {
         WebElement username = driver.findElement(By.id("new_username"));    //locate username field
         username.sendKeys("olakola@mail.com");   //enters already registered username into field
+        username.clear();
+        username.sendKeys("olakola@mail.com");   //enters already registered username into field
         System.out.println("\nUsername already registered, choose another and try again");
 
     }
 
     @Given("I don not enter email address")
     public void iDonNotEnterEmailAddress() {
+        WebElement email = driver.findElement(By.id("email"));  //locate email field
+        email.clear();
+        Assert.assertTrue(email.getText().isEmpty());
         System.out.println("\nMissing email, please enter a valid email and try again.");
     }
 

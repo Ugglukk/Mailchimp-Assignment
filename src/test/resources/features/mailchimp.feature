@@ -6,7 +6,7 @@ Feature: MailChimp
     Given I enter username
     Given I enter password
     When I press signup button
-    Then I get verification if account created or not
+    Then I get verification that account is created
 
   Scenario: Enter long username over 100 signs
     Given I have opened browser
@@ -14,7 +14,7 @@ Feature: MailChimp
     Given I enter long username
     Given I enter password
     When I press signup button
-    Then I get verification if account created or not
+    Then I get verification that account is not created
 
   Scenario: Username already registered
     Given I have opened browser
@@ -22,7 +22,7 @@ Feature: MailChimp
     Given I enter already used username
     Given I enter password
     When I press signup button
-    Then I get verification if account created or not
+    Then I get verification that account is not created
 
   Scenario: Create account without email
     Given I have opened browser
@@ -30,6 +30,4 @@ Feature: MailChimp
     Given I enter username
     Given I enter password
     When I press signup button
-    Then I get verification if account created or not
-
-
+    Then I get verification that account is not created
